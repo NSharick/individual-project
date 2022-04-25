@@ -2,7 +2,7 @@
 
 #imports
 import pandas as pd
-
+from sklearn.preprocessing import MinMaxScaler
 
 #acquire function
 def get_online_retail():
@@ -34,4 +34,19 @@ def prep_online_retail(df):
                                     'Lebanon': 24, 'Saudi Arabia': 25, 'Bahrain': 26, 'United Arab Emirates': 27,
                                    'Brazil': 28, 'USA': 29, 'Canada': 30, 'RSA': 31, 'Singapore': 32, 'Japan': 33,
                                    'Australia': 34, 'European Community': 35, 'Unspecified': 36})
+    df = df.drop(columns=['InvoiceNo', 'StockCode', 'Description', 'Quantity', 'InvoiceDate', 'UnitPrice', 'Country',
+                          'last_purchase', 'sales_total'])
+    df = df.groupby('CustomerID').max()
     return df
+
+#scaling function - prep for clustering
+def scale_online_retail(df):
+    ''' This function takes in a dataframe and returns a dataframe 
+    with the values scaled using a min-max scaler
+    '''
+    scaler = MinMaxScaler()
+    scaler.fit(df)
+    scaled_df = scaler.transform(df)
+    df = pd.DataFrame(scaled_df, columns=df.columns, index=df.index)
+    return df
+
