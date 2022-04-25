@@ -16,7 +16,7 @@ def clean_online_retail(df):
     return df
 
 #prep function
-def prep_online_retail(df):
+def feat_eng_online_retail(df):
     df['last_purchase'] = df['CustomerID'].apply(lambda x: df[df['CustomerID'] == x].InvoiceDate.max())
     today = pd.to_datetime('2011-12-10')
     df['recency'] = df['last_purchase'].apply(lambda x: (today - x).days)
@@ -26,6 +26,10 @@ def prep_online_retail(df):
     df['average_order_value'] = df['CustomerID'].apply(lambda x: df[df['CustomerID'] == x].sales_total.mean())
     df['avg_items_ordered'] = df['CustomerID'].apply(lambda x: df[df['CustomerID'] == x].Quantity.mean())
     df['unique_items_count'] = df['CustomerID'].apply(lambda x: df[df['CustomerID'] == x].Description.nunique())
+    return df
+
+#scaling function - prep for clustering
+def model_prep_online_retail(df):
     df['dist_rating'] = df.Country.map({'United Kingdom': 0, 'EIRE': 1, 'Channel Islands': 2, 'France': 3, 'Belgium': 4,
                                    'Netherlands': 5, 'Germany': 6, 'Switzerland': 7, 'Austria': 8,
                                     'Czech Republic': 9, 'Denmark': 10, 'Italy': 11, 'Spain': 12, 'Norway': 13, 
@@ -37,13 +41,6 @@ def prep_online_retail(df):
     df = df.drop(columns=['InvoiceNo', 'StockCode', 'Description', 'Quantity', 'InvoiceDate', 'UnitPrice', 'Country',
                           'last_purchase', 'sales_total'])
     df = df.groupby('CustomerID').max()
-    return df
-
-#scaling function - prep for clustering
-def scale_online_retail(df):
-    ''' This function takes in a dataframe and returns a dataframe 
-    with the values scaled using a min-max scaler
-    '''
     scaler = MinMaxScaler()
     scaler.fit(df)
     scaled_df = scaler.transform(df)
