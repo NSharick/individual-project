@@ -28,8 +28,8 @@ def feat_eng_online_retail(df):
     df['unique_items_count'] = df['CustomerID'].apply(lambda x: df[df['CustomerID'] == x].Description.nunique())
     return df
 
-#scaling function - prep for clustering
-def model_prep_online_retail(df):
+#preparation function for customer grouping
+def prep_online_retail(df):
     df['dist_rating'] = df.Country.map({'United Kingdom': 0, 'EIRE': 1, 'Channel Islands': 2, 'France': 3, 'Belgium': 4,
                                    'Netherlands': 5, 'Germany': 6, 'Switzerland': 7, 'Austria': 8,
                                     'Czech Republic': 9, 'Denmark': 10, 'Italy': 11, 'Spain': 12, 'Norway': 13, 
@@ -41,6 +41,10 @@ def model_prep_online_retail(df):
     df = df.drop(columns=['InvoiceNo', 'StockCode', 'Description', 'Quantity', 'InvoiceDate', 'UnitPrice', 'Country',
                           'last_purchase', 'sales_total'])
     df = df.groupby('CustomerID').max()
+    return df
+    
+#scaling function - prep for clustering
+def scale_online_retail(df):
     scaler = MinMaxScaler()
     scaler.fit(df)
     scaled_df = scaler.transform(df)
